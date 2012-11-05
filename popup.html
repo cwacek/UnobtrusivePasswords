@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Simple Password Hasher</title>
+    <style>
+      body {
+        min-width:29em;
+        overflow-x:hidden;
+        text-align: right;
+        font-family: sans-serif;
+        font-size: 90%;
+      }
+      .result_entry label {
+        padding-right: 1em;
+        font-style: italic;
+      }
+      #result {
+        text-align: left;
+        border-top: 1px solid #CCC;
+        margin-top: 0.5em;
+        padding-top: 0.5em;
+      }
+      .result_entry {
+        padding-left: 10px;
+      }
+      .result_entry span {
+        font-family: monospace;
+        font-size: 100%;
+      }
+
+    </style>
+
+    <!-- JavaScript and HTML must be in separate files for security. -->
+    <script src="sha256-hmac.js"></script>
+    <script src="sha256.js"></script>
+    <script src="enc-base64.js"></script>
+    <script src="jquery.min.js"></script>
+    <script src="popup.js"></script>
+  </head>
+  <body>
+    <div id="main">
+      <div id="input">
+        <label for="site">Site:</label>
+        <input id="site" type="text">
+        <label for="master">Password:</label>
+        <input id="master" type="password">
+        <input type='button' id='submit' onclick="doHash()" value="Hash!"/>
+      </div>
+      <div id="result">
+      </div>
+    </div>
+  </body>
+</html>
