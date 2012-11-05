@@ -13,9 +13,11 @@ I provide 3 hashes for each keyword/password pair - you can
 choose which one to use.
 
 There are a bunch of these types of extensions on the Chrome App
-Store, but they all do too much for my comfort. This type of
-extension shouldn't have access to anything on my pages. I don't
-find auto-filling to be particularly helpful.
+Store, but they all do too much for my comfort. I refuse to
+install an extension with permissions of '*read anything on all
+pages; modify pages*'. This type of extension shouldn't have
+access to anything on my pages. I don't find auto-filling to be
+particularly helpful.
 
 Security
 --------
