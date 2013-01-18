@@ -2,18 +2,21 @@
 <html ng-app="UnobtrusivePasswords" ng-csp>
   <head>
     <title>Simple Password Hasher</title>
-    <link rel='stylesheet', href="angular-ui.min.css" />
-    <link rel='stylesheet', href="bootstrap.min.css" />
+    <link rel='stylesheet', href="lib/angular-ui.min.css" />
+    <link rel='stylesheet', href="lib/bootstrap.min.css" />
+    <link rel='stylesheet', href="lib/jquery-ui-1.9.2.custom/css/ui-lightness/jquery-ui-1.9.2.custom.min.css" />
     <link rel='stylesheet', href="popup.css" />
 
     <!-- JavaScript and HTML must be in separate files for security. -->
-    <script src="sha256-hmac.js"></script>
-    <script src="sha256.js"></script>
-    <script src="enc-base64.js"></script>
-    <script src="jquery.min.js"></script>
-    <script src="angular.min.js"></script>
-    <script src="angular-ui.min.js"></script>
-    <script src="bootstrap.min.js"></script>
+    <script src="lib/sha256-hmac.js"></script>
+    <script src="lib/sha256.js"></script>
+    <script src="lib/enc-base64.js"></script>
+    <script src="lib/jquery-ui-1.9.2.custom/js/jquery-1.8.3.js"></script>
+    <script src="lib/angular.js"></script>
+    <script src="lib/angular-ui.min.js"></script>
+    <script src="lib/bootstrap.min.js"></script>
+    <script src="lib/jquery-ui-1.9.2.custom/js/jquery-ui-1.9.2.custom.min.js"></script>
+    <script src="autocomplete.js"></script>
     <script src="unobtrusive.js"></script>
   </head>
   <body ng-controller="UnobtrusiveCtrl">
