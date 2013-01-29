@@ -22,7 +22,8 @@
   <body ng-controller="UnobtrusiveCtrl">
     <div class='main'>
       <form class="form-inline" name="input_form" ng-submit="doHash()" >
-        <input type="text" class="input-medium" placeholder="Site/Key" ng-model="site" required/>
+        <span><input type="text" class="input-medium" placeholder="Site/Key" ng-model="site" required
+          auto-complete="autocmp_src"/></span>
         <input type="password" class="input-small" placeholder="Password" ng-model="password" required/>
         <label class="checkbox">
           <input type="checkbox" ng-model='save'/> Save 
@@ -45,6 +46,7 @@
           </tbody>
         </table>
       </div>
+
     </div>
   </body>
 </html>

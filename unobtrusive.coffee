@@ -1,4 +1,4 @@
-unobtrusive = angular.module "UnobtrusivePasswords", ['ui']
+unobtrusive = angular.module "UnobtrusivePasswords", ['ui','oblique.directives']
 
 unobtrusive.factory 'MyCrypto', ->
   return MyCrypto =
@@ -18,14 +18,29 @@ unobtrusive.factory 'History', ->
     constructor:  ->
       @data = {}
 
-    push: (element) ->
-      @data.element = true
+    load: (array)->
+      (@push element for element in array)
 
-    asList: ->
-      (element for element in @data when element is true)
+    push: (element) ->
+      @data[element] = true
+
+    asList: (filter)->
+
+      if filter?
+        filterpieces = filter.split '.'
+        re = new RegExp (filterpieces.join("\\.")) 
+      else
+        re = new RegExp '.*'
+      (element for element,valid of @data when valid && re.test element )
 
     pop: (element) ->
-      delete @data.element
+      delete @data[element]
+
+    filter: ->
+      me = @
+      (request, response) ->
+        response me.asList(request.term)
+
 
   History =
     key: null
@@ -33,17 +48,24 @@ unobtrusive.factory 'History', ->
 
     initialize: (k) ->
       @key = k
+      _key = @key
+      _url_list = @url_list
       chrome.storage.local.get @key, (item) ->
-        @url_list = if $.isEmptyObject(item) then new UniqueList() else item.k
+        if ! $.isEmptyObject item
+          _url_list.load item[_key]
 
     addUrl: (url)->
       @url_list.push(url)
-      chrome.storage.local.set {key: @url_list}
+      entry = {}
+      entry[@key] = @url_list.asList()
+      chrome.storage.local.set entry
 
 
 unobtrusive.controller 'UnobtrusiveCtrl', ($scope, MyCrypto, History) ->
 
   History.initialize('unobtrusive')
+
+  $scope.autocmp_src = History.url_list.filter()
 
   ###
   # The main functionality
@@ -60,8 +82,7 @@ unobtrusive.controller 'UnobtrusiveCtrl', ($scope, MyCrypto, History) ->
       History.addUrl($scope.site)
 
   # Watch the form validity and hide the things if its invalid
-  $scope.$watch (scope)->
-      return scope.input_form.$valid if scope.input_form?
-      return null
-    , (oldv,newv,scope)->
+  $scope.$watch 'input_form' 
+    , (newv,oldv,scope)->
+      console.log newv
       $scope.haveResult = false if newv == false
