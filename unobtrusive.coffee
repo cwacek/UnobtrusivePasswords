@@ -71,7 +71,30 @@ unobtrusive.factory 'History', ->
       entry[@key] = @url_list.asList()
       chrome.storage.local.set entry
 
-unobtrusive.controller 'UnobtrusiveCtrl', ($scope, MyCrypto, History, $location) ->
+unobtrusive.factory 'Settings', ->
+  Settings =
+    settings:
+      p_length: 10
+
+    get: (key)->
+      @settings[key]
+
+    set: (key,val)->
+      @settings[key] = val
+
+    apply: ->
+      self = this
+      storage_entry =
+        unobtrusive_settings: @settings
+      chrome.storage.local.set storage_entry
+
+    initialize: ->
+      self = this
+      chrome.storage.local.get "unobtrusive_settings", (item) ->
+        if ! $.isEmptyObject item
+          self.settings = item["unobtrusive_settings"]
+
+unobtrusive.controller 'UnobtrusiveCtrl', ($scope, MyCrypto, History, Settings, $location) ->
 
   History.initialize('unobtrusive')
 
@@ -84,10 +107,12 @@ unobtrusive.controller 'UnobtrusiveCtrl', ($scope, MyCrypto, History, $location)
   $scope.in_settings = false
   $scope.haveResult = false
 
+  Settings.initialize()
+
   $scope.doHash = ->
     MyCrypto.initialize $scope.site, $scope.password
 
-    $scope.hashList = (MyCrypto.getNext $scope.password for x in [1..3])
+    $scope.hashList = (MyCrypto.getNext($scope.password, Settings.get("p_length")) for x in [1..3])
     $scope.haveResult = true
     History.addUrl($scope.site)
 
@@ -96,19 +121,24 @@ unobtrusive.controller 'UnobtrusiveCtrl', ($scope, MyCrypto, History, $location)
     ($scope.haveResult and $scope.input_form.$valid)
 
   $scope.toggleSettings = ->
-    path = if $scope.in_settings then '/' else '/settings'
+    if $scope.in_settings
+      path = "/"
+      Settings.apply()
+    else
+      path = '/settings'
     $location.path(path)
     $scope.in_settings = ! $scope.in_settings
 
-unobtrusive.controller 'UnobtrusiveSettingsCtrl', ($scope, History, $location) ->
+unobtrusive.controller 'UnobtrusiveSettingsCtrl', ($scope, History, Settings, $location) ->
 
-  $scope.setting =
-    p_length: 10
+  $scope.settings =
+    Settings.settings
 
   $scope.history = ->
     History.url_list.asList()
 
   $scope.toggleSettings = ->
+    Settings.apply()
     $location.path("/")
 
   $scope.removeKey = (key) ->
