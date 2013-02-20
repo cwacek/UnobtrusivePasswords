@@ -38,7 +38,15 @@ configuration settings.
 It also uses Angular and jQuery, but only for display purposes.
 All library files are included and not retrieved over the network
 
+Where can I get it?
+-------------------
+
+You can either clone this repo, and install it manually, or you
+can grab it from the [Chrome Web Store][3] (for free).
+
 
 [1]: http://pragmattica.wordpress.com/2009/04/30/password-hashing-a-neat-idea-that-can-help-to-protect-your-online-accounts/
 [2]: http://code.google.com/p/crypto-js/
+[3]: https://chrome.google.com/webstore/detail/unobtrusivepasswords/oloklipnlbjjjbpggeeijidknkmnjhje
+
 
