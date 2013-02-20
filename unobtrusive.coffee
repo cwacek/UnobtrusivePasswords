@@ -1,5 +1,11 @@
 unobtrusive = angular.module "UnobtrusivePasswords", ['ui','oblique.directives']
 
+unobtrusive.directive 'eatClick', ->
+  opts =
+    link: (scope, elem, attrs)->
+      elem.click (event)->
+        event.preventDefault()
+
 unobtrusive.factory 'MyCrypto', ->
   return MyCrypto =
     curr: null
@@ -28,7 +34,7 @@ unobtrusive.factory 'History', ->
 
       if filter?
         filterpieces = filter.split '.'
-        re = new RegExp (filterpieces.join("\\.")) 
+        re = new RegExp (filterpieces.join("\\."))
       else
         re = new RegExp '.*'
       (element for element,valid of @data when valid && re.test element )
@@ -40,7 +46,6 @@ unobtrusive.factory 'History', ->
       me = @
       (request, response) ->
         response me.asList(request.term)
-
 
   History =
     key: null
@@ -60,8 +65,13 @@ unobtrusive.factory 'History', ->
       entry[@key] = @url_list.asList()
       chrome.storage.local.set entry
 
+    remove: (key)->
+      @url_list.pop(key)
+      entry = {}
+      entry[@key] = @url_list.asList()
+      chrome.storage.local.set entry
 
-unobtrusive.controller 'UnobtrusiveCtrl', ($scope, MyCrypto, History) ->
+unobtrusive.controller 'UnobtrusiveCtrl', ($scope, MyCrypto, History, $location) ->
 
   History.initialize('unobtrusive')
 
@@ -71,6 +81,7 @@ unobtrusive.controller 'UnobtrusiveCtrl', ($scope, MyCrypto, History) ->
   # The main functionality
   ###
   $scope.hashlist = []
+  $scope.in_settings = false
   $scope.haveResult = false
 
   $scope.doHash = ->
@@ -78,11 +89,35 @@ unobtrusive.controller 'UnobtrusiveCtrl', ($scope, MyCrypto, History) ->
 
     $scope.hashList = (MyCrypto.getNext $scope.password for x in [1..3])
     $scope.haveResult = true
-    if ($scope.save )
-      History.addUrl($scope.site)
+    History.addUrl($scope.site)
 
-  # Watch the form validity and hide the things if its invalid
-  $scope.$watch 'input_form' 
-    , (newv,oldv,scope)->
-      console.log newv
-      $scope.haveResult = false if newv == false
+  $scope.showResults = ->
+    $scope.haveResult = false if not $scope.input_form.$valid
+    ($scope.haveResult and $scope.input_form.$valid)
+
+  $scope.toggleSettings = ->
+    path = if $scope.in_settings then '/' else '/settings'
+    $location.path(path)
+    $scope.in_settings = ! $scope.in_settings
+
+unobtrusive.controller 'UnobtrusiveSettingsCtrl', ($scope, History, $location) ->
+
+  $scope.setting =
+    p_length: 10
+
+  $scope.history = ->
+    History.url_list.asList()
+
+  $scope.toggleSettings = ->
+    $location.path("/")
+
+  $scope.removeKey = (key) ->
+    console.log "Removal of #{key} requested"
+    History.remove(key)
+
+
+unobtrusive.config ['$routeProvider', ($routeProvider) -> (
+  $routeProvider.when '/', {templateUrl: 'p_form.html', controller: 'UnobtrusiveCtrl'}
+  $routeProvider.when '/settings', {templateUrl: 'p_settings.html', controller: 'UnobtrusiveSettingsCtrl'}
+  $routeProvider.otherwise {redirectTo: '/'}
+)]
