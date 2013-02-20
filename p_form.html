@@ -1,0 +1,40 @@
+      <form class="form-horizontal" name="input_form" ng-submit="doHash()" >
+        <div class="input-prepend mainform">
+          <span class="add-on add-on-front"
+                ui-jq="popover" 
+                ui-options="{placement:'right', trigger:'hover'}"
+                data-original-title="Previous keys will autocomplete. You can remove old or accidental ones in the settings" 
+                >
+            Site/Key
+          </span>
+          <input type="text" placeholder="google.com "ng-model='site' auto-complete='autocmp_src' 
+                 required autofocus />
+        </div>
+        <div class="input-prepend mainform">
+          <span class="add-on add-on-front"
+              ui-jq="popover" 
+              ui-options="{placement:'right', trigger:'hover'}"
+              data-original-title="The secret passcode you want to use to generate the password" 
+            >Secret</span>
+          <input ng-model="password" type="password" required />
+        </div>
+          <div class='control'>
+            <input type="submit" class="btn" value="Hash!"/>
+          </div>
+      </form>
+      <div id="result" ng-show="showResults()">
+        <table cellspacing="0" class="hashlist table table-striped">
+          <thead>
+            <tr>
+              <th>Generated passwords</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="hash in hashList">
+              <td>
+                <span class="hash">{{hash}}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>

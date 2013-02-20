@@ -1,5 +1,47 @@
 .main {
-  width: 28em;
-  padding: 1ex;
-  height: 6em;
+  width: 18em;
+  padding: 0ex 1ex;
+  vertical-align: top;
 }
+
+.my-fieldset {
+  padding: 5px 10px 10px 10px;
+}
+
+.my-legend {
+  font-size:14px;
+  font-weight: bold;
+  line-height: 20px;
+  margin-bottom: 1em;
+}
+
+.mainform .add-on-front {
+  width: 4em;
+}
+
+.mainform input {
+  width: 12em;
+}
+
+.control {
+  margin-top: 1em;
+  text-align: center;
+}
+
+.control > input {
+  width: 100%;
+}
+
+.heading-container  {
+  border-bottom: 1px solid #dddddd;
+  padding: 5px 0px;
+  vertical-align: middle;
+  margin-bottom: 1ex;
+}
+
+.heading-container div {
+  display: inline-block;
+  vertical-align: bottom;
+  margin-right: 4em;
+}
+

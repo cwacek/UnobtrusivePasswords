@@ -1,4 +1,10 @@
-unobtrusive = angular.module "UnobtrusivePasswords", ['ui']
+unobtrusive = angular.module "UnobtrusivePasswords", ['ui','oblique.directives']
+
+unobtrusive.directive 'eatClick', ->
+  opts =
+    link: (scope, elem, attrs)->
+      elem.click (event)->
+        event.preventDefault()
 
 unobtrusive.factory 'MyCrypto', ->
   return MyCrypto =
@@ -18,14 +24,28 @@ unobtrusive.factory 'History', ->
     constructor:  ->
       @data = {}
 
-    push: (element) ->
-      @data.element = true
+    load: (array)->
+      (@push element for element in array)
 
-    asList: ->
-      (element for element in @data when element is true)
+    push: (element) ->
+      @data[element] = true
+
+    asList: (filter)->
+
+      if filter?
+        filterpieces = filter.split '.'
+        re = new RegExp (filterpieces.join("\\."))
+      else
+        re = new RegExp '.*'
+      (element for element,valid of @data when valid && re.test element )
 
     pop: (element) ->
-      delete @data.element
+      delete @data[element]
+
+    filter: ->
+      me = @
+      (request, response) ->
+        response me.asList(request.term)
 
   History =
     key: null
@@ -33,22 +53,35 @@ unobtrusive.factory 'History', ->
 
     initialize: (k) ->
       @key = k
+      _key = @key
+      _url_list = @url_list
       chrome.storage.local.get @key, (item) ->
-        @url_list = if $.isEmptyObject(item) then new UniqueList() else item.k
+        if ! $.isEmptyObject item
+          _url_list.load item[_key]
 
     addUrl: (url)->
       @url_list.push(url)
-      chrome.storage.local.set {key: @url_list}
+      entry = {}
+      entry[@key] = @url_list.asList()
+      chrome.storage.local.set entry
 
+    remove: (key)->
+      @url_list.pop(key)
+      entry = {}
+      entry[@key] = @url_list.asList()
+      chrome.storage.local.set entry
 
-unobtrusive.controller 'UnobtrusiveCtrl', ($scope, MyCrypto, History) ->
+unobtrusive.controller 'UnobtrusiveCtrl', ($scope, MyCrypto, History, $location) ->
 
   History.initialize('unobtrusive')
+
+  $scope.autocmp_src = History.url_list.filter()
 
   ###
   # The main functionality
   ###
   $scope.hashlist = []
+  $scope.in_settings = false
   $scope.haveResult = false
 
   $scope.doHash = ->
@@ -56,12 +89,35 @@ unobtrusive.controller 'UnobtrusiveCtrl', ($scope, MyCrypto, History) ->
 
     $scope.hashList = (MyCrypto.getNext $scope.password for x in [1..3])
     $scope.haveResult = true
-    if ($scope.save )
-      History.addUrl($scope.site)
+    History.addUrl($scope.site)
 
-  # Watch the form validity and hide the things if its invalid
-  $scope.$watch (scope)->
-      return scope.input_form.$valid if scope.input_form?
-      return null
-    , (oldv,newv,scope)->
-      $scope.haveResult = false if newv == false
+  $scope.showResults = ->
+    $scope.haveResult = false if not $scope.input_form.$valid
+    ($scope.haveResult and $scope.input_form.$valid)
+
+  $scope.toggleSettings = ->
+    path = if $scope.in_settings then '/' else '/settings'
+    $location.path(path)
+    $scope.in_settings = ! $scope.in_settings
+
+unobtrusive.controller 'UnobtrusiveSettingsCtrl', ($scope, History, $location) ->
+
+  $scope.setting =
+    p_length: 10
+
+  $scope.history = ->
+    History.url_list.asList()
+
+  $scope.toggleSettings = ->
+    $location.path("/")
+
+  $scope.removeKey = (key) ->
+    console.log "Removal of #{key} requested"
+    History.remove(key)
+
+
+unobtrusive.config ['$routeProvider', ($routeProvider) -> (
+  $routeProvider.when '/', {templateUrl: 'p_form.html', controller: 'UnobtrusiveCtrl'}
+  $routeProvider.when '/settings', {templateUrl: 'p_settings.html', controller: 'UnobtrusiveSettingsCtrl'}
+  $routeProvider.otherwise {redirectTo: '/'}
+)]
