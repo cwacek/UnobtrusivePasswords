@@ -6,19 +6,4 @@
     <input class='input-mini' ng-model="settings.p_length" type="number" />
   </div>
 </div>
-<div class="my-fieldset well">
-  <legend class="my-legend">Stored Keys</legend>
-  <table cellspacing="0" class="table table-striped">
-  <tbody>
-    <tr ng-repeat="item in history()" class="historyRow">
-      <td class="historyItem">{{item}}</td>
-      <td class="historyCtrl" >
-        <a eat-click ng-click="removeKey(item)" href="#" >
-          <i class="icon-remove-sign"></i>
-        </a>
-      </td>
-    </tr>
-  </tbody>
-  </table>
-</div>
 </div>
