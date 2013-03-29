@@ -41,8 +41,6 @@ unobtrusive.controller 'UnobtrusiveCtrl', ($scope, MyCrypto,  Settings, $locatio
   $scope.in_settings = false
   $scope.haveResult = false
 
-  Settings.initialize()
-
   $scope.doHash = ->
     MyCrypto.initialize $scope.site, $scope.password
 
@@ -56,7 +54,6 @@ unobtrusive.controller 'UnobtrusiveCtrl', ($scope, MyCrypto,  Settings, $locatio
   $scope.toggleSettings = ->
     if $scope.in_settings
       path = "/"
-      Settings.apply()
     else
       path = '/settings'
     $location.path(path)
@@ -68,7 +65,6 @@ unobtrusive.controller 'UnobtrusiveSettingsCtrl', ($scope,  Settings, $location)
     Settings.settings
 
   $scope.toggleSettings = ->
-    Settings.apply()
     $location.path("/")
 
 unobtrusive.config ['$routeProvider', ($routeProvider) -> (
