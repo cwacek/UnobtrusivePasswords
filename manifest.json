@@ -1,7 +1,7 @@
 {   
   "name": "UnobtrusivePasswords",
   "manifest_version": 2,
-  "version": "1.1",
+  "version": "1.2",
   "description": "A simple master password tool that doesn't intrude on your web browsing.",
   "homepage_url": "https://github.com/cwacek/UnobtrusivePasswords",
   "browser_action": {     
