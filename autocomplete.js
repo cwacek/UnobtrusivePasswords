@@ -18,7 +18,10 @@ available at http://github.com/cwacek/Oblique
       link: function(scope, elem, attr) {
         var options;
         options = {
-          source: scope.$eval(attr.autoComplete)
+          source: scope.$eval(attr.autoComplete),
+          select: function(event, ui) {
+            return scope[attr.ngModel] = ui.item.value;
+          }
         };
         return elem.autocomplete(options);
       }
